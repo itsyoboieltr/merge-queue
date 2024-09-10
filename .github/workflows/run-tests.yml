@@ -26,6 +26,11 @@ jobs:
       - name: Run tests
         run: bun test --coverage --coverage-reporter=lcov --coverage-reporter=text
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lcov.info
+          path: coverage/lcov.info
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
         env:
