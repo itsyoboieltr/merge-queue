@@ -37,18 +37,16 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          organization=$(grep 'sonar.organization=' sonar-project.properties | cut -d'=' -f2)
           projectKey=$(grep 'sonar.projectKey=' sonar-project.properties | cut -d'=' -f2)
-          component="${organization}_${projectKey}"
-          sonar_coverage=$(curl --silent --header "Authorization: Bearer $SONAR_TOKEN" "https://sonarcloud.io/api/measures/component?component=$component&metricKeys=coverage" | jq -r '.component.measures[0].value // 0')
-          echo "The Sonar coverage of $component is $sonar_coverage%."
+          sonar_coverage=$(curl --silent --header "Authorization: Bearer $SONAR_TOKEN" "https://sonarcloud.io/api/measures/component?component=$projectKey&metricKeys=coverage" | jq -r '.component.measures[0].value // 0')
+          echo "The Sonar coverage of $projectKey is $sonar_coverage%."
           echo 'SONAR_COVERAGE='"$sonar_coverage" >> "$GITHUB_OUTPUT"
 
       - name: Validate test coverage
         env:
           SONAR_COVERAGE: ${{ steps.get-sonar-coverage.outputs.SONAR_COVERAGE }}
         run: |
-          coverage=$(yarn nyc report --reporter=text-summary | grep 'Lines' | awk '{gsub(/%/, ""); print $3}')
+          coverage=$(bunx nyc report --reporter=text-summary | grep 'Lines' | awk '{gsub(/%/, ""); print $3}')
           if [ -z "$coverage" ]; then
             echo "::error::Could not retrieve test coverage."
             exit 1
