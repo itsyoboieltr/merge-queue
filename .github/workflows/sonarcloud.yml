@@ -30,6 +30,7 @@ jobs:
         with:
           name: lcov.info
           path: coverage
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
