@@ -12,6 +12,9 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+
 jobs:
   sonarcloud:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
