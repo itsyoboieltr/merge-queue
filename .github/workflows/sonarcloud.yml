@@ -34,7 +34,6 @@ jobs:
           name: lcov.info
           path: coverage
           github-token: ${{ github.token }}
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: SonarCloud Scan
