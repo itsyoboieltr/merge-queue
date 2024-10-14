@@ -3,7 +3,7 @@ name: Run tests
 on:
   push:
     branches:
-      - main
+      - main-2
       - dev
   pull_request:
     types:
