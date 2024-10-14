@@ -12,8 +12,7 @@ on:
     types:
       - completed
 
-permissions:
-  actions: read
+permissions: read-all
 
 jobs:
   sonarcloud:
