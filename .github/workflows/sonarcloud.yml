@@ -48,9 +48,6 @@ jobs:
           fi
           echo "$sonar_project_properties" > sonar-project.properties
 
-      - name: Check sonar-project.properties
-        run: cat sonar-project.properties
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
         env:
