@@ -4,10 +4,10 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
-      - reopened
 
 jobs:
   add-team-label:
     uses: ./.github/workflows/add-team-label.yml
-    secrets: inherit
+    secrets:
+      TEAM_LABEL_TOKEN: ${{ secrets.TEAM_LABEL_TOKEN }}
+      PR_LABEL_TOKEN: ${{ secrets.PR_LABEL_TOKEN }}
