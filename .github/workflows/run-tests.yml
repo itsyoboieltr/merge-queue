@@ -1,15 +1,7 @@
 name: Run tests
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  workflow_call:
 
 jobs:
   run-tests:
