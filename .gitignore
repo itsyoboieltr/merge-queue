@@ -173,3 +173,5 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+merge-group-failed.sh
+service_account.json
