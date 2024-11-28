@@ -24,6 +24,7 @@ jobs:
         run: |
           curl https://storage.googleapis.com/oauth2l/latest/linux_amd64.tgz --output linux_amd64.tgz
           tar -xzf linux_amd64.tgz --strip-components=1
+          echo "$PWD/oauth2l" >> $GITHUB_PATH
 
       - name: Create service_account.json
         env:
@@ -39,7 +40,7 @@ jobs:
           SHEET_NAME: ${{ secrets.MQ_SHEET_NAME }}
         run: |
           current_date=$(date +%Y-%m-%d)
-          token=$(./oauth2l fetch --scope https://www.googleapis.com/auth/spreadsheets)
+          token=$(oauth2l fetch --scope https://www.googleapis.com/auth/spreadsheets)
           spreadsheet_data=$(curl --silent --header "Authorization: Bearer $token" https://sheets.googleapis.com/v4/spreadsheets/$SPREADSHEET_ID/values/$SHEET_NAME!A:B)
           current_date_index=$(echo $spreadsheet_data | jq --arg current_date $current_date '(.values | map(.[0])) | (index($current_date) | if . == null then null else . + 1 end)')
           current_number_of_prs=$(echo $spreadsheet_data | jq --arg current_date $current_date '(.values[] | select(.[0] == $current_date) | .[1] | tonumber) // null')
