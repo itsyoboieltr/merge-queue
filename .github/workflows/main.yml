@@ -23,8 +23,8 @@ jobs:
       - name: Download oauth2l
         run: |
           curl https://storage.googleapis.com/oauth2l/latest/linux_amd64.tgz --output linux_amd64.tgz
-          tar -xzf linux_amd64.tgz --strip-components=1
-          echo "oauth2l" >> $GITHUB_PATH
+          tar -xzf linux_amd64.tgz
+          echo "$PWD/linux_amd64" >> $GITHUB_PATH
 
       - name: Create service_account.json
         env:
