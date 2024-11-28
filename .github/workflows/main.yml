@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Download oauth2l
         run: |
-          curl https://storage.googleapis.com/oauth2l/latest/linux_amd64.tgz --output linux_amd64.tgz
+          curl --silent https://storage.googleapis.com/oauth2l/latest/linux_amd64.tgz --output linux_amd64.tgz
           tar -xzf linux_amd64.tgz
           echo "$PWD/linux_amd64" >> $GITHUB_PATH
 
@@ -45,7 +45,7 @@ jobs:
           current_date_index=$(echo $spreadsheet_data | jq --arg current_date $current_date '(.values | map(.[0])) | (index($current_date) | if . == null then null else . + 1 end)')
           current_number_of_prs=$(echo $spreadsheet_data | jq --arg current_date $current_date '(.values[] | select(.[0] == $current_date) | .[1] | tonumber) // null')
           if [ "$current_date_index" == "null" ]; then
-            curl --header "Authorization: Bearer $token" --header "Content-Type: application/json" --request POST --data "{\"values\":[[\"$current_date\", 1]]}" https://sheets.googleapis.com/v4/spreadsheets/$SPREADSHEET_ID/values/$SHEET_NAME!A:A:append?valueInputOption=USER_ENTERED
+            curl --silent --header "Authorization: Bearer $token" --header "Content-Type: application/json" --request POST --data "{\"values\":[[\"$current_date\", 1]]}" https://sheets.googleapis.com/v4/spreadsheets/$SPREADSHEET_ID/values/$SHEET_NAME!A:A:append?valueInputOption=USER_ENTERED
           else
-            curl --header "Authorization: Bearer $token" --header "Content-Type: application/json" --request PUT --data "{\"values\":[[\"$current_date\", $(($current_number_of_prs + 1))]]}" https://sheets.googleapis.com/v4/spreadsheets/$SPREADSHEET_ID/values/$SHEET_NAME!A$current_date_index:B$current_date_index?valueInputOption=USER_ENTERED
+            curl --silent --header "Authorization: Bearer $token" --header "Content-Type: application/json" --request PUT --data "{\"values\":[[\"$current_date\", $(($current_number_of_prs + 1))]]}" https://sheets.googleapis.com/v4/spreadsheets/$SPREADSHEET_ID/values/$SHEET_NAME!A$current_date_index:B$current_date_index?valueInputOption=USER_ENTERED
           fi
