@@ -20,6 +20,11 @@ jobs:
     name: Merge group failed
     runs-on: ubuntu-latest
     steps:
+      - name: Download oauth2l
+        run: |
+          curl https://storage.googleapis.com/oauth2l/latest/linux_amd64.tgz --output linux_amd64.tgz
+          tar -xzf linux_amd64.tgz --strip-components=1
+
       - name: Create service_account.json
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
