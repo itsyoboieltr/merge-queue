@@ -3,12 +3,23 @@ name: On delete
 on:
   push:
     branches:
-      - asd
+      - gh-readonly-queue/*
 
 jobs:
   on-delete:
     name: On delete
     runs-on: ubuntu-latest
     steps:
-      - name: Run tests
+      - name: Show GitHub context
         run: echo "${{ toJson(github) }}"
+
+      - name: Check commit status
+        if: github.event.deleted
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          REF: ${{ github.event.after }}
+        run: |
+          status=$(gh api --header 'Accept: application/vnd.github+json' "/repos/$OWNER/$REPO/commits/$REF/status" --jq ".state")
+          echo "Commit status: $status"
