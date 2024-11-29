@@ -15,3 +15,12 @@ jobs:
   run-tests:
     name: Run tests
     uses: ./.github/workflows/run-tests.yml
+
+  log-merge-group-failure:
+    name: Log merge group failure
+    uses: ./.github/workflows/log-merge-group-failure.yml
+    secrets:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+      SPREADSHEET_ID: ${{ secrets.MQ_SPREADSHEET_ID }}
+      SHEET_NAME: ${{ secrets.MQ_SHEET_NAME }}
