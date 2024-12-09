@@ -17,7 +17,9 @@ permissions:
 
 jobs:
   sonarcloud:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.repository.fork == false }}
+    # Only scan code from non-forked repositories that have passed the tests
+    # This will skip scanning the code for forks, but will run for the main repository on PRs from forks
+    if: ${{ github.event.workflow_run.conclusion == 'success' && !github.event.workflow_run.repository.fork }}
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
@@ -33,8 +35,8 @@ jobs:
         with:
           name: lcov.info
           path: coverage
-          github-token: ${{ github.token }}
-          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }} # This is required when downloading artifacts from a different repository or from a different workflow run.
+          run-id: ${{ github.event.workflow_run.id }} # Use the workflow id that triggered the workflow
 
       - name: Download sonar-project.properties
         env:
@@ -50,6 +52,10 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
+        # Override the branch name to the branch that triggered the workflow
+        with:
+          args: >
+            -Dsonar.branch.name=${{ github.event.workflow_run.head_branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
