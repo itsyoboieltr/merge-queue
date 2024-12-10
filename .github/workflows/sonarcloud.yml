@@ -3,6 +3,10 @@
 # actions that may result in code from that branch being executed
 # such as installing dependencies or running build scripts.
 
+# Updating this file on feature branches or forks will not reflect changes.
+# For security reasons, always the latest version from the default branch is used.
+# This means any changes made to this file in a feature branch will not be considered until they are merged.
+
 name: SonarCloud
 
 on:
@@ -17,9 +21,9 @@ permissions:
 
 jobs:
   sonarcloud:
-    # Only scan code from non-forked repositories that have passed the tests
+    # Only scan code from non-forked repositories that have passed the tests using the push and pull_request events
     # This will skip scanning the code for forks, but will run for the main repository on PRs from forks
-    if: ${{ github.event.workflow_run.conclusion == 'success' && !github.event.workflow_run.repository.fork }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && !github.event.workflow_run.repository.fork && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push') }}
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
@@ -29,10 +33,6 @@ jobs:
           repository: ${{ github.event.workflow_run.head_repository.full_name }} # Use the repository that triggered the workflow
           ref: ${{ github.event.workflow_run.head_branch }} # Use the branch that triggered the workflow
           fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
-
-      - name: Echo
-        run: |
-          echo "${{ toJson(github.event) }}"
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -54,12 +54,26 @@ jobs:
           fi
           echo "$sonar_project_properties" > sonar-project.properties
 
+      - name: Echo
+        run: |
+          echo "${{ toJson(github.event.workflow_run.pull_requests) }}"
+
+      - name: Update sonar-project.properties with branch information
+        env:
+          EVENT: ${{ github.event.workflow_run.event }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          if [ "$EVENT" == "pull_request" ]; then
+            # echo "sonar.pullrequest.key=$HEAD_BRANCH" >> sonar-project.properties
+            # echo "sonar.pullrequest.branch=$HEAD_BRANCH" >> sonar-project.properties
+            # echo "sonar.pullrequest.base=$HEAD_BRANCH" >> sonar-project.properties
+            echo "sonar.branch.name=$HEAD_BRANCH" >> sonar-project.properties
+          else
+            echo "sonar.branch.name=$HEAD_BRANCH" >> sonar-project.properties
+          fi
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
-        # Override the branch name to the branch that triggered the workflow
-        with:
-          args: >
-            -Dsonar.branch.name=${{ github.event.workflow_run.head_branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
