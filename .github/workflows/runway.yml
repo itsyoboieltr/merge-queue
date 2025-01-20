@@ -1,0 +1,12 @@
+name: Runway
+
+on:
+  # The workflow will be triggered on push to release branches
+  push:
+    branches:
+      - Version-v*
+
+jobs:
+  run-tests:
+    name: Run tests
+    uses: ./.github/workflows/run-tests.yml
